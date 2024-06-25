@@ -30,7 +30,6 @@ public class JwtService {
                                 UserDetails userDetails){
         return Jwts.builder().claims(extraClaims)
                 .subject(userDetails.getUsername())
-                .claim("ROLE", userDetails.getAuthorities().toString())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000* 60 * 24))
                 .signWith(getSignInKey())
@@ -55,9 +54,6 @@ public class JwtService {
     }
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
         final Claims claims = extractAllClaims(token);
-        System.out.println("claims = " + claims);
-        String role = (String) claims.get("ROLE");
-        System.out.println("role = " + role);
         return claimsResolver.apply(claims);
     }
 
