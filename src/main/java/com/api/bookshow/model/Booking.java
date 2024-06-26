@@ -22,5 +22,7 @@ public class Booking {
 
     private int numberOfSeats;
     private double totalPrice;
+    private double gstAmount;
     private LocalDateTime bookingTime;
+    private BookingStatus status;
 }
