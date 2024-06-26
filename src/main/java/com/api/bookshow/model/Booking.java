@@ -25,4 +25,7 @@ public class Booking {
     private double gstAmount;
     private LocalDateTime bookingTime;
     private BookingStatus status;
+
+    @OneToOne
+    private Coupon coupon;
 }

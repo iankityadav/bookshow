@@ -28,6 +28,11 @@ public class RestExceptionHandler {
     public ResponseEntity<Object> handleAgeNotAllowedException(InvalidFormatException ex, HttpServletRequest request) {
         return new ResponseEntity<>(jsonify(ex), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleAllException(Exception ex, HttpServletRequest request) {
+        return new ResponseEntity<>(jsonify(ex), HttpStatus.BAD_REQUEST);
+    }
     
     private Map<String,String> jsonify(Exception ex){
         Map<String,String> map = new HashMap<>();
