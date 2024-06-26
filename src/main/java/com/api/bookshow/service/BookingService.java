@@ -22,6 +22,12 @@ public class BookingService {
         return bookingRepository.findByEventId(eventId);
     }
 
+    /**
+     * List out all the bookings within a date range
+     * @param startDate
+     * @param endDate
+     * @return list of bookings
+     */
     public List<Booking> getBookingsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         return bookingRepository.findByDateRange(startDate, endDate);
     }
@@ -30,6 +36,11 @@ public class BookingService {
         return bookingRepository.findAll();
     }
 
+    /**
+     * Fetch the total amount and gst for all the bookings
+     * @param bookings
+     * @return total amount and gst
+     */
     public BookingStatistics getBookingStatistics(List<Booking> bookings) {
         int totalBookings = bookings.size();
         BigDecimal totalMoneyCollected = bookings.stream()
@@ -42,6 +53,11 @@ public class BookingService {
         return new BookingStatistics(totalBookings, totalMoneyCollected, totalGSTCollected);
     }
 
+    /**
+     *
+     * @param bookingId
+     * @return amount to return
+     */
     public CancellationResponse cancelBooking(Long bookingId) {
         Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
 
@@ -70,6 +86,11 @@ public class BookingService {
         return new CancellationResponse(refundAmount, gstAmount);
     }
 
+    /**
+     * Utility method to check for the refund percentage
+     * @param duration
+     * @return percentage
+     */
     private static BigDecimal getRefundPercent(Duration duration) {
         long hoursUntilEvent = duration.toHours();
 

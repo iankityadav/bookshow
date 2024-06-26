@@ -23,6 +23,9 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.List;
 
+/**
+ * Service to authenticate and register user into application
+ */
 @Service
 public class AuthService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,6 +42,13 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
+    /**
+     * Save the user credentials with role
+     * User with age above 18 are only allowed to register into application
+     *
+     * @param request
+     * @return token to authenticate
+     */
     public AuthenticationResponse register(RegisterRequest request) {
         Role role = request.getRole() == 1 ? Role.ADMIN : Role.USER;
         Users user;
@@ -65,6 +75,11 @@ public class AuthService {
         return new AuthenticationResponse(jwtToken);
     }
 
+    /**
+     * Method to authenticate user with credentials
+     * @param request
+     * @return token to authenticate
+     */
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
