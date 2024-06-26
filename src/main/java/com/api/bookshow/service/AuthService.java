@@ -3,9 +3,14 @@ package com.api.bookshow.service;
 import com.api.bookshow.dto.AuthenticationRequest;
 import com.api.bookshow.dto.AuthenticationResponse;
 import com.api.bookshow.dto.RegisterRequest;
+import com.api.bookshow.exception.AgeNotAllowedException;
 import com.api.bookshow.model.Role;
 import com.api.bookshow.model.Users;
 import com.api.bookshow.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,10 +18,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
 public class AuthService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -31,18 +40,27 @@ public class AuthService {
     }
 
     public AuthenticationResponse register(RegisterRequest request) {
-        Role role = request.getRole() == 1 ? Role.USER : Role.ADMIN;
-        Users user = new Users();
+        Role role = request.getRole() == 1 ? Role.ADMIN : Role.USER;
+        Users user;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            user = mapper.readValue(mapper.writeValueAsString(request), Users.class);
+            LocalDate dob = user.getDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            int ageInYears = Period.between(dob, LocalDate.now()).getYears();
+            logger.info("ageInYears: {}", ageInYears);
+            if (ageInYears <= 18) throw new AgeNotAllowedException("Age not allowed");
+        } catch (JsonProcessingException | AgeNotAllowedException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setUsername(request.getUsername());
-        user.setName(request.getName());
         user.setRole(role);
-        if(userRepository.findByUsername(request.getUsername()).isEmpty()){
+        if (userRepository.findByUsername(request.getUsername()).isEmpty()) {
             userRepository.save(user);
         }
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role.name()));
-        System.out.println("authorities = " + authorities);
-        String jwtToken = jwtService.generateToken(new User(user.getUsername(), user.getPassword(),user.getAuthorities()));
+        String jwtToken = jwtService.generateToken(new User(user.getUsername(), user.getPassword(), user.getAuthorities()));
 
         return new AuthenticationResponse(jwtToken);
     }
@@ -53,8 +71,7 @@ public class AuthService {
                 request.getPassword()));
         Users user = userRepository.findByUsername(request.getUsername()).orElseThrow();
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
-        System.out.println("authorities = " + authorities);
-        var jwtToken = jwtService.generateToken(new User(user.getUsername(), user.getPassword(),user.getAuthorities()));
+        var jwtToken = jwtService.generateToken(new User(user.getUsername(), user.getPassword(), user.getAuthorities()));
         return new AuthenticationResponse(jwtToken);
     }
 }
