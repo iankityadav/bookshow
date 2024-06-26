@@ -1,5 +1,6 @@
 package com.api.bookshow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ public class Theater {
 
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "theater")
     private List<Event> events;
 }

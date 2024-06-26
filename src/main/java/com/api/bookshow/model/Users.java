@@ -1,12 +1,15 @@
 package com.api.bookshow.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -18,6 +21,11 @@ public class Users implements UserDetails {
     private String name;
     private String username;
     private String password;
+    @Email
+    private String email;
+    @Digits(integer = 10, fraction = 0)
+    private String phone;
+    private Date dob;
 
     @Enumerated(EnumType.STRING)
     private  Role role;
