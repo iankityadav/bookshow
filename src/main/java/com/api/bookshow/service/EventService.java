@@ -3,6 +3,7 @@ package com.api.bookshow.service;
 import com.api.bookshow.model.Event;
 import com.api.bookshow.model.Theater;
 import com.api.bookshow.repository.EventRepository;
+import com.api.bookshow.repository.TheaterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,17 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private TheaterRepository theaterRepository;
+
     public Event createEvent(Event event) {
         if (eventRepository.existsByTheaterAndStartTimeAndEndTime(event.getTheater(), event.getStartTime(), event.getEndTime())) {
             throw new RuntimeException("Event already exists at the same time in the same theater");
         }
         event.setAvailableSeats(event.getMaxOccupancy());
-        return eventRepository.save(event);
+        Event eventCreated = eventRepository.save(event);
+        eventCreated.setTheater(theaterRepository.findById(eventCreated.getTheater().getId()).orElseThrow());
+        return eventCreated;
     }
 
     public Optional<Event> getEvent(Long eventId) {

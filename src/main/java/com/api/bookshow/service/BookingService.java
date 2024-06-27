@@ -89,10 +89,12 @@ public class BookingService {
         BigDecimal gstAmount = BigDecimal.valueOf(booking.getGstAmount());
 
         // Release seats
-        // booking.getEvent().releaseSeats(booking.getSeatsBooked());
+        Event event = booking.getEvent();
+        event.setAvailableSeats(event.getAvailableSeats() + booking.getNumberOfSeats());
+        eventRepository.save(event);
 
         // Update booking status
-        // booking.setStatus(BookingStatus.CANCELLED);
+         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
         return new CancellationResponse(refundAmount, gstAmount);
