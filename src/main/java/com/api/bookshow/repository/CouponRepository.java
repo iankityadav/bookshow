@@ -9,9 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Repository
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
+
+    Optional<Coupon> findByCodeAndExpiryDateAfter(String couponCode, LocalDate now);
 //    @Modifying
 //    @Transactional
 //    @Query("DELETE FROM Coupon c WHERE c.expiryDate < current_timestamp OR c.maxUsage <= 0")

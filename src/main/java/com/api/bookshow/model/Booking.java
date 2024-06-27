@@ -1,5 +1,6 @@
 package com.api.bookshow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
@@ -26,6 +28,7 @@ public class Booking {
     private LocalDateTime bookingTime;
     private BookingStatus status;
 
+    @JsonIgnore
     @OneToOne
     private Coupon coupon;
 }

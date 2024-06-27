@@ -32,8 +32,11 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAllEvents());
+    public ResponseEntity<List<Event>> getAllEvents(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String theaterName) {
+        return ResponseEntity.ok(eventService.getAllEvents(name,type,theaterName));
     }
 
     @RolesAllowed("ADMIN")

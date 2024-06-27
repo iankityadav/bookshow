@@ -6,6 +6,7 @@ import com.api.bookshow.model.Booking;
 import com.api.bookshow.service.BookingService;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -44,5 +45,14 @@ public class BookingController {
     @PostMapping("/{bookingId}/cancel")
     public CancellationResponse cancelBooking(@PathVariable Long bookingId) {
         return bookingService.cancelBooking(bookingId);
+    }
+
+    @PostMapping
+    public ResponseEntity<Booking> bookTickets(@RequestParam Long eventId,
+                                               @RequestParam Long userId,
+                                               @RequestParam int numberOfTickets,
+                                               @RequestParam(required = false) String couponCode) {
+        Booking booking = bookingService.bookTickets(eventId, userId, numberOfTickets, couponCode);
+        return ResponseEntity.ok(booking);
     }
 }
