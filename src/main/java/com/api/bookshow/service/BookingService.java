@@ -60,7 +60,7 @@ public class BookingService {
                 .map(Booking::getTotalPrice).map(BigDecimal::new)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal totalGSTCollected = bookings.stream()
-                .map(Booking::getTotalPrice).map(BigDecimal::new)
+                .map(Booking::getGstAmount).map(BigDecimal::new)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new BookingStatistics(totalBookings, totalMoneyCollected, totalGSTCollected);
@@ -169,6 +169,8 @@ public class BookingService {
         booking.setUser(user);
         booking.setNumberOfSeats(numberOfTickets);
         booking.setTotalPrice(totalPrice.doubleValue());
+        booking.setGstAmount(gstAmount.doubleValue());
+        booking.setStatus(BookingStatus.COMPLETED);
         booking.setBookingTime(LocalDateTime.now());
 
         return bookingRepository.save(booking);
