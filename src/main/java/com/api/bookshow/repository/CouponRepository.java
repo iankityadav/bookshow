@@ -15,8 +15,8 @@ import java.util.Optional;
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
     Optional<Coupon> findByCodeAndExpiryDateAfter(String couponCode, LocalDate now);
-//    @Modifying
-//    @Transactional
-//    @Query("DELETE FROM Coupon c WHERE c.expiryDate < current_timestamp OR c.maxUsage <= 0")
-//    void deleteExpiredOrConsumedCoupons(Long id);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Coupon c WHERE c.expiryDate < current_timestamp OR c.maxUsage <= 0")
+    void deleteExpiredOrConsumedCoupons();
 }
